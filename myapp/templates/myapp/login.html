@@ -1,0 +1,30 @@
+{% extends "myapp/base.html" %}
+{% block title %}ログイン画面{% endblock %}
+{% block navbar-title %}ログイン画面{% endblock %}
+
+{% block content %}
+<div class="border col-8">
+  <form method="post" action="{% url 'myapp:Login' %}">
+    {% csrf_token %}
+
+    <table class="reg_form">
+      <div class="mb-3">
+         <label for="userid" class="form-label">ユーザーID:</label>
+         <input type="text" name="userid" class="form-control">
+      </div>
+      <div class="mb-3">
+         <label for="password">パスワード：</label>
+         <input type="password" name="password" class="form-control">
+      </div>
+    </table>
+
+    <div class="mb-3">
+        <input type="submit" class="btn btn-primary" value="Login">
+    </div>
+    
+ </form>
+</div>
+   <p class="message">アカウントをお持ちですか？：
+   <a href="{% url 'myapp:register' %}">アカウントを作成</a>
+   </p>
+{% endblock %}

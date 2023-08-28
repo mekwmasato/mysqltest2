@@ -1,0 +1,39 @@
+{% extends "myapp/base.html" %}
+{% block title %}ホーム{% endblock %}
+{% block navbar-title %}Home{% endblock %}
+{% block content %}
+<h1><font color="blue">{{ UserID }}</font>さんようこそ！！</h1>
+
+<div class="border col-8">
+    <form method="post" action="{% url 'myapp:home' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="input_text" class="form-label">テキストを入力:</label>
+            <input type="text" name="input_text" class="form-control">
+            <button type="submit" class="btn btn-primary btn-sm">送信する</button>
+        </div>
+    </form>
+</div>
+
+{% if response %}
+<div class="border col-8">
+    <div class="mb-3">
+        <p>入力した文章：<br>
+        <div class="mb-3">
+            {{input_text}}
+        </div><br>
+
+        <strong>ChatGPT：</strong><br>
+        <div class="mb-3">
+        {{response}}
+        </div>
+        <br><br>
+    </div>
+</div>
+
+{% endif %}
+
+<p> ログアウトは
+<a href="{% url 'myapp:Logout' %}">こちら</a>
+</p>
+{% endblock %}

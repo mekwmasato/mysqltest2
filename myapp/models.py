@@ -17,17 +17,18 @@ class Account(models.Model):
         return self.user.username
     
 
-class ChatGPTSystemCommand(models.Model): #最初のキャラ付け用の命令を格納
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # ユーザーとのリレーション
-    chatgpt_template = models.TextField(max_length=200)
+class ChatHistory(models.Model):
+    # 会話を行ったユーザーの情報 (Accountモデルへの外部キー)
+    user_account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    # ユーザーからの質問やコメント
+    user_message = models.TextField()
+
+    # ChatGPTからの応答
+    chatgpt_response = models.TextField()
+
+    # 会話の日時
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.command_text
-
-class ChatHistory(models.Model): #会話履歴を格納
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # ユーザーとのリレーション
-    message_content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True) # 会話が追加された日時
-
-    def __str__(self):
-        return self.message_content
+        return f"{self.user_account.user.username} - {self.timestamp}"

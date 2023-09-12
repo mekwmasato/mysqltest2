@@ -2,7 +2,7 @@ import openai
 import os
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 # キャラクターの設定
 initial_message = {

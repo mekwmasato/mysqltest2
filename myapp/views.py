@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView #テンプレートタグ
 from .forms import AccountForm, AddAccountForm, ChatGPTTemplateForm #ユーザーアカウントフォーム
 from django.views import View
-from .utils import chat_with_gpt
+from .utils import chat_with_gpt 
 
 
 # ログイン・ログアウト処理に利用
@@ -10,6 +10,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+
+from .models import ChatSession, Message
 
 #ログイン
 def Login(request):
@@ -56,57 +58,46 @@ def home(request):
 
     #POST
     if request.method == 'POST':
-        # 画面に入力した文章を取得
-        input_text= request.POST['input_text']
-        if input_text:
-            # Chat-GPTへリクエストを投げる
-            response = chat_with_gpt(input_text)
-            # 辞書型データを作成する
-            context = {
-                'UserID': request.user,
-                'input_text': input_text,
-                'response': response,
-                }
+        input_text = request.POST['input_text']
+        
+        # Chat-GPTへのリクエスト
+        #response = chat_with_gpt(input_text, request.user) if input_text else None
+        response, chat_session = chat_with_gpt(input_text, request.user)  # 修正
 
-            # テンプレートにデータを渡す
-            return render(request, 'myapp/home.html', context)
-        else:
-            context={
-                'UserID': request.user,
-            }
-            return render(request, 'myapp/home.html', context)
+        # データベースに保存
+        if input_text and response:
+            # ユーザーのメッセージを保存
+            Message.objects.create(
+                user=request.user,
+                role='user',
+                content=input_text,
+                chat_history=chat_session  # 修正
+            )
+            # ChatGPTのレスポンスを保存
+            Message.objects.create(
+                user=request.user,
+                role='assistant',
+                content=response,
+                chat_history=chat_session # 適切なChatSessionのインスタンスを指定
+            )
+
+        context = {
+            'UserID': request.user,
+            'input_text': input_text,
+            'response': response,
+        }
+        
+        # ユーザーの過去の会話履歴を取得
+        chat_histories = Message.objects.filter(user=request.user).order_by('-timestamp')[:10]  # 最新の10件を取得
+        context['chat_histories'] = chat_histories
+
+        return render(request, 'myapp/home.html', context)
         
     #GET
     else:
         params = {"UserID":request.user,}
         return render(request, "myapp/home.html",context=params)
 
-# Create your views here.
-class GrammarCorrectionView(View):
-    
-    def get(self, request):
-        
-        return render(request, 'myapp/talkchatgpt.html')
-    
-    def post(self, request):
-        
-        # 画面に入力した文章を取得
-        input_text= request.POST['input_text']
-        if input_text:
-            # Chat-GPTに投げる命令文を生成
-            #prompt = create_prompt(input_text, "GPTidol.txt") #txtデータ内の[input]を置き換えているのかも。流れの調整で連続した会話ができる可能性mekw
-            # Chat-GPTへリクエストを投げる
-            response = chat_with_gpt(input_text)
-            # 辞書型データを作成する
-            context = {
-                'input_text': input_text,
-                'response': response,
-                }
-
-            # テンプレートにデータを渡す
-            return render(request, 'myapp/talkcha.html', context)
-        else:
-            return render(request, 'proofreading/grammar_correction.html')
 
 #新規登録
 class  AccountRegistration(TemplateView):

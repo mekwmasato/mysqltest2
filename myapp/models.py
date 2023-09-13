@@ -16,19 +16,24 @@ class Account(models.Model):
     def __str__(self):
         return self.user.username
     
-
-class ChatHistory(models.Model):
-    # 会話を行ったユーザーの情報 (Accountモデルへの外部キー)
+class ChatSession(models.Model):
     user_account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
-    # ユーザーからの質問やコメント
-    user_message = models.TextField()
-
-    # ChatGPTからの応答
-    chatgpt_response = models.TextField()
-
-    # 会話の日時
-    timestamp = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
-        return f"{self.user_account.user.username} - {self.timestamp}"
+        return f"{self.user_account.user.username}"
+
+class Message(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    ROLE_CHOICES = [
+        ('system', 'system'),
+        ('user', 'user'),
+        ('assistant', 'assistant'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    content = models.TextField()
+
+    # このメッセージが関連するチャット履歴への外部キー
+    chat_history = models.ForeignKey('ChatSession', on_delete=models.CASCADE, related_name='messages')
+
+    # メッセージの日時
+    timestamp = models.DateTimeField(auto_now_add=True)

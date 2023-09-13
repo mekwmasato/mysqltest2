@@ -53,6 +53,7 @@ def Logout(request):
 #ホーム
 @login_required
 def home(request):
+
     #POST
     if request.method == 'POST':
         # 画面に入力した文章を取得
@@ -62,6 +63,7 @@ def home(request):
             response = chat_with_gpt(input_text)
             # 辞書型データを作成する
             context = {
+                'UserID': request.user,
                 'input_text': input_text,
                 'response': response,
                 }
@@ -69,7 +71,11 @@ def home(request):
             # テンプレートにデータを渡す
             return render(request, 'myapp/home.html', context)
         else:
-            return render(request, 'myapp/home.html')
+            context={
+                'UserID': request.user,
+            }
+            return render(request, 'myapp/home.html', context)
+        
     #GET
     else:
         params = {"UserID":request.user,}

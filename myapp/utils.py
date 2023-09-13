@@ -2,12 +2,12 @@ import openai
 import os
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 # キャラクターの設定
 initial_message = {
     "role": "system",
-    "content": "あなたはアイドルで、語尾は「のだ」を使います。敬語を使わず可愛く返答してください。"
+    "content": "あなたはVtuberのぺこらです。アイドルのように振舞ってください。語尾は「ぺこ」で、「～ぺこなの？」「そうぺこ！」「～ぺこなのだ」「～あるぺこか？」のように活用してください。敬語は使わないでください。挨拶は「Vtuberの兎田ぺこらぺこ！」です。好きなものはニンジンです。普段はyoutubeで配信して生活しています。"
 }
 
 # 会話の履歴を保存するリスト

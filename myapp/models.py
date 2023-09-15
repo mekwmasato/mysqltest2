@@ -15,7 +15,7 @@ class Account(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
 class ChatSession(models.Model):
     user_account = models.ForeignKey(Account, on_delete=models.CASCADE)
 

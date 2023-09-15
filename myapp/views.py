@@ -51,7 +51,6 @@ def Logout(request):
     return HttpResponseRedirect(reverse('myapp:Login'))
 
 
-
 #ホーム
 @login_required
 def home(request):
@@ -86,9 +85,9 @@ def home(request):
             'input_text': input_text,
             'response': response,
         }
-        
+        print(f"context:{context}")
         # ユーザーの過去の会話履歴を取得
-        chat_histories = Message.objects.filter(user=request.user).order_by('-timestamp')[:10]  # 最新の10件を取得
+        chat_histories = Message.objects.filter(user=request.user).order_by('-timestamp')[:100]  # 最新の10件を取得
         context['chat_histories'] = chat_histories
 
         return render(request, 'myapp/home.html', context)
@@ -152,3 +151,6 @@ class  AccountRegistration(TemplateView):
 
         return render(request,"myapp/register.html",context=self.params)
     
+
+def docs(request):
+    return render(request, 'myapp/docsbot.html')

@@ -54,6 +54,10 @@ def Logout(request):
 #ホーム
 @login_required
 def home(request):
+    try:
+        account = request.user.account
+    except Account.DoesNotExist:
+        return HttpResponse("関連するアカウントが存在しません。")
 
     #POST
     if request.method == 'POST':
@@ -130,7 +134,6 @@ class  AccountRegistration(TemplateView):
             account.save()
 
             # 下記追加情報
-            # 下記操作のため、コミットなし
             add_account = self.params["add_account_form"].save(commit=False)
             # AccountForm & AddAccountForm 1vs1 紐付け
             add_account.user = account

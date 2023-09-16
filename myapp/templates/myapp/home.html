@@ -3,38 +3,34 @@
 {% block navbar-title %}Home{% endblock %}
 
 {% block content %}
-<h1><font color="blue">{{ UserID }}</font>さんようこそ！！</h1>
-
-<div class="border col-8">
-    <form method="post" action="{% url 'myapp:home' %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="input_text" class="form-label">テキストを入力:</label>
-            <input type="text" name="input_text" class="form-control">
-            <button type="submit" class="btn btn-primary btn-sm">送信する</button>
+<div class="container mt-5">
+    <div class="card mt-4 col-md-8 mx-auto" style="height: 400px; overflow-y: auto;">
+        <!-- ユーザーが送信した内容 -->
+        <div class="d-flex mb-3 justify-content-end">
+            <div class="bg-primary text-white rounded py-2 px-4 ml-5">
+                {{ input_text }}
+            </div>
         </div>
-    </form>
-</div>
-
-{% if response %}
-<div class="border col-8">
-    <div class="mb-3">
-        <p>入力した文章：<br>
-        <div class="mb-3">
-            {{input_text}}
-        </div><br>
-
-        <strong>ChatGPT：</strong><br>
-        <div class="mb-3">
-        {{response}}
+        <!-- ChatGPTの返信 -->
+        <div class="d-flex mb-3">
+            <div class="bg-secondary text-white rounded py-2 px-4 mr-5">
+                {{ response }}
+            </div>
         </div>
-        <br><br>
     </div>
+
+    <div class="card mt-3 p-4 col-md-8 mx-auto">
+        <form method="post" action="{% url 'myapp:home' %}" class="d-flex">
+            {% csrf_token %}
+            <div class="flex-grow-1">
+                <input type="text" name="input_text" id="input_text" class="form-control">
+            </div>
+            <div class="ms-3">
+                <button type="submit" class="btn btn-primary">送信する</button>
+            </div>
+        </form>
+    </div>
+    
+    <p class="mt-4">ログアウトは<a href="{% url 'myapp:Logout' %}" class="text-primary">こちら</a></p>
 </div>
-
-{% endif %}
-
-<p> ログアウトは
-<a href="{% url 'myapp:Logout' %}">こちら</a>
-</p>
 {% endblock %}

@@ -2,7 +2,7 @@ import openai
 from .models import ChatSession, Message
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 def chat_with_gpt(input_text, user):
     print(f"chat_with_gpt.{user}:{input_text}")
@@ -14,6 +14,7 @@ def chat_with_gpt(input_text, user):
 
     # 新しいChatSessionが作成された場合の処理
     if created:
+        print(f"create new session")
         # systemとしてのキャラ付けメッセージを作成
         system_message = {
             "role": "system",

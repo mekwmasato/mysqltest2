@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import ChatSession, Message
+from .models import Message, Account
 
 #ログイン
 def Login(request):
@@ -91,7 +91,9 @@ def home(request):
         }
         print(f"context:{context}")
         # ユーザーの過去の会話履歴を取得
-        chat_histories = Message.objects.filter(user=request.user).order_by('-timestamp')[:100]  # 最新の10件を取得
+        message_count = Message.objects.filter(user=request.user).count()
+        chat_histories = Message.objects.filter(user=request.user).order_by('timestamp')[max(0, message_count-10):message_count]
+
         context['chat_histories'] = chat_histories
 
         return render(request, 'myapp/home.html', context)

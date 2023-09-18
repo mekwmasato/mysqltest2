@@ -2,7 +2,7 @@ import openai
 from .models import ChatSession, Message
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 def chat_with_gpt(input_text, user):
     print(f"chat_with_gpt.{user}:{input_text}")

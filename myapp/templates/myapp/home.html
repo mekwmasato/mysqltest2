@@ -4,19 +4,23 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card mt-4 col-md-8 mx-auto" style="height: 400px; overflow-y: auto;">
-        <!-- ユーザーが送信した内容 -->
-        <div class="d-flex mb-3 justify-content-end">
-            <div class="bg-primary text-white rounded py-2 px-4 ml-5">
-                {{ input_text }}
+    <div class="card mt-4 col-8 mx-auto" id="chatArea" style="height: 400px; overflow-y: auto;">
+
+        {% for chat in chat_histories %}
+            {% if chat.role == 'user' %}<!-- ユーザーが送信した内容 -->
+            <div class="d-flex mb-3 justify-content-end">
+                <div class="bg-primary text-white rounded py-2 px-4 ml-5">
+                    {{ chat.content }}
+                </div>
             </div>
-        </div>
-        <!-- ChatGPTの返信 -->
-        <div class="d-flex mb-3">
-            <div class="bg-secondary text-white rounded py-2 px-4 mr-5">
-                {{ response }}
+            {% else %}<!-- ChatGPTの返信 -->
+            <div class="d-flex mb-3">
+                <div class="bg-secondary text-white rounded py-2 px-4 mr-5">
+                    {{ chat.content }}
+                </div>
             </div>
-        </div>
+            {% endif %}
+        {% endfor %}
     </div>
 
     <div class="card mt-3 p-4 col-md-8 mx-auto">

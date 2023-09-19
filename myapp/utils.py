@@ -2,7 +2,7 @@ import openai
 from .models import ChatSession, Message
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 def chat_with_gpt(input_text, user):
     print(f"chat_with_gpt.{user}:{input_text}")
@@ -18,7 +18,7 @@ def chat_with_gpt(input_text, user):
         # systemとしてのキャラ付けメッセージを作成
         system_message = {
             "role": "system",
-            "content": "あなたは特定の企業の情報をユーザーに伝えるチャットアシスタントです。次の情報をユーザーにわかりやすく伝えてください。会社概要会社名	株式会社パワービー,創立	平成3年12月12日,資本金	3000万円,代表者	伊藤 維月光,本社住所	510-0074三重県四日市市鵜の森1丁目14-18三昌ビル3C室,事業所	三重県四日市市垂坂町字山上谷1340番地,業務内容	(ビジネス教育事業、システム設計、ロボット開発),スタッフ	16名"
+            "content": "あなたはパワービーという企業の情報をユーザーに伝えるチャットアシスタントです。ユーザーに企業情報について聞かれた場合のみ次の情報を簡潔に伝えてください。必ず会話は30文字以内にしてください。会社概要会社名 株式会社パワービー,創立	平成3年12月12日,資本金	3000万円,代表者	伊藤 維月光,本社住所	510-0074三重県四日市市鵜の森1丁目14-18三昌ビル3C室,事業所	三重県四日市市垂坂町字山上谷1340番地,業務内容	(ビジネス教育事業、システム設計、ロボット開発),スタッフ	16名。最初は挨拶するなどして自然な会話にしてください"
         }
         Message.objects.create(
             role=system_message["role"],

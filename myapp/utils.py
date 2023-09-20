@@ -2,7 +2,7 @@ import openai
 from .models import ChatSession, Message, Account
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 def chat_with_gpt(input_text, user):
     print(f"chat_with_gpt.{user}:{input_text}")
@@ -63,7 +63,7 @@ def chat_with_gpt(input_text, user):
     Message.objects.create(
         user=user,
         role='assistant',
-        content=response,
+        content=response.choices[0].message["content"],
         chat_history=chat_session # 適切なChatSessionのインスタンスを指定
     )
 

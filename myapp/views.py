@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView #テンプレートタグ
-from .forms import AccountForm, AddAccountForm, ChatGPTTemplateForm #ユーザーアカウントフォーム
+from .forms import AccountForm, AddAccountForm #ユーザーアカウントフォーム
 from django.views import View
 from .utils import chat_with_gpt 
 
@@ -11,7 +11,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import Message, Account
+from .models import Message, Account, ChatSession
+
+from django.shortcuts import redirect
+from django.contrib import messages
+
 
 #ログイン
 def Login(request):
@@ -90,6 +94,18 @@ def home(request):
             "chat_histories": chat_histories,
         }
         return render(request, "myapp/home.html", context=params)
+
+#ChatSessionを削除してHomeにリダイレクト
+@login_required
+def delete_session(request):
+    try:
+        account = request.user.account
+        chat_session = ChatSession.objects.get(user_account=account)
+        chat_session.delete()
+        messages.success(request, "ChatSessionを削除しました。")
+    except ChatSession.DoesNotExist:
+        messages.error(request, "ChatSessionが見つかりませんでした。")
+    return redirect("myapp:home")  # 'home'はhomeビューのURL名です。
 
 
 #新規登録

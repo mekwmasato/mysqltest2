@@ -1,8 +1,31 @@
 import openai
-from .models import ChatSession, Message, Account
+from .models import ChatSession, Message, Summary
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
+
+def get_summary(chat_history):
+    # 既存の会話履歴を結合します
+    previous_messages = [{"role": msg.role, "content": msg.content} for msg in chat_history.messages.all()]
+    #print(f"previous_message@utils.get_summary:{previous_messages}")
+    
+    # OpenAI APIを使って要約を取得
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=previous_messages + [{"role": "user", "content": "この会話を要点を押さえて要約してください。特に最新の会話が崩壊しないよう気を付けてください。重要な情報は箇条書きでリストアップして下さい。"}]
+    )
+    
+    # レスポンスから要約テキストを取得
+    summary_text = response.choices[0].message["content"].strip()
+    
+    # 要約を保存（必要に応じて）
+    summary, created = Summary.objects.get_or_create(chat_history=chat_history, defaults={'content': summary_text})
+    if not created:
+        summary.content = summary_text
+        summary.save()
+    
+    return summary
+
 
 def chat_with_gpt(input_text, user):
     print(f"chat_with_gpt.{user}:{input_text}")
@@ -11,6 +34,9 @@ def chat_with_gpt(input_text, user):
     # 既存のChatSessionを取得または新しいものを作成
     account = user.account
     chat_session, created = ChatSession.objects.get_or_create(user_account=account)
+    
+    #summary= get_summary(chat_session)
+    #print(f"summary「{summary.content}」")
 
     # 新しいChatSessionが作成された場合の処理
     if created:
@@ -26,17 +52,9 @@ def chat_with_gpt(input_text, user):
             chat_history=chat_session
         )
 
-    # ユーザーのメッセージをDBに保存
-    Message.objects.create(
-        user=user,
-        role='user',
-        content=input_text,
-        chat_history=chat_session  # 修正
-    )
-
     # 過去の会話履歴を取得
     previous_messages = chat_session.messages.all()
-    print(f"previous_message={previous_messages}")
+    #print(f"previous_message={previous_messages}")
 
     # 会話履歴をOpenAI APIの形式に変換
     messages_for_api = [
@@ -59,6 +77,13 @@ def chat_with_gpt(input_text, user):
         messages=messages_for_api
     )
 
+    # ユーザーのメッセージをDBに保存
+    Message.objects.create(
+        user=user,
+        role='user',
+        content=input_text,
+        chat_history=chat_session  # 修正
+    )
     # ChatGPTのレスポンスを保存
     Message.objects.create(
         user=user,

@@ -35,12 +35,11 @@
         </form>
     </div>
     <div class="container">
-        <form method="post" action="{% url 'myapp:delete_session' %}">
+        <form method="post" action="{% url 'myapp:delete_session' %}" class="d-flex justify-content-center align-items-center">
             {% csrf_token %}
-            <input type="submit" value="ChatSessionを削除" />
+            <button type="submit" class="btn btn-warning mt-3">ChatSessionを削除</button>
         </form>
     </div>
-    
     
     <p class="mt-4">ログアウトは<a href="{% url 'myapp:Logout' %}" class="text-primary">こちら</a></p>
 </div>

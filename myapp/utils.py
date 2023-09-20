@@ -1,5 +1,5 @@
 import openai
-from .models import ChatSession, Message
+from .models import ChatSession, Message, Account
 from django.conf import settings
 
 APK_KEY = "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"
@@ -26,6 +26,14 @@ def chat_with_gpt(input_text, user):
             chat_history=chat_session
         )
 
+    # ユーザーのメッセージをDBに保存
+    Message.objects.create(
+        user=user,
+        role='user',
+        content=input_text,
+        chat_history=chat_session  # 修正
+    )
+
     # 過去の会話履歴を取得
     previous_messages = chat_session.messages.all()
     print(f"previous_message={previous_messages}")
@@ -51,11 +59,12 @@ def chat_with_gpt(input_text, user):
         messages=messages_for_api
     )
 
-    # GPTからのレスポンスを保存
-    gpt_message_model = Message.objects.create(
+    # ChatGPTのレスポンスを保存
+    Message.objects.create(
+        user=user,
         role='assistant',
-        content=response.choices[0].message["content"],
-        chat_history=chat_session
+        content=response,
+        chat_history=chat_session # 適切なChatSessionのインスタンスを指定
     )
 
     return response.choices[0].message["content"], chat_session

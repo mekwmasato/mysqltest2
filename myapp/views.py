@@ -63,25 +63,7 @@ def home(request):
         input_text = request.POST['input_text']
         
         # Chat-GPTへのリクエスト
-        #response = chat_with_gpt(input_text, request.user) if input_text else None
         response, chat_session = chat_with_gpt(input_text, request.user)  # 修正
-
-        # データベースに保存
-        if input_text and response:
-            # ユーザーのメッセージを保存
-            Message.objects.create(
-                user=request.user,
-                role='user',
-                content=input_text,
-                chat_history=chat_session  # 修正
-            )
-            # ChatGPTのレスポンスを保存
-            Message.objects.create(
-                user=request.user,
-                role='assistant',
-                content=response,
-                chat_history=chat_session # 適切なChatSessionのインスタンスを指定
-            )
 
         context = {
             'UserID': request.user,

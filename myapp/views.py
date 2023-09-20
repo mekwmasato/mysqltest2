@@ -42,7 +42,6 @@ def Login(request):
     else:
         return render(request, 'myapp/login.html')
 
-
 #ログアウト
 @login_required
 def Logout(request):
@@ -100,8 +99,15 @@ def home(request):
         
     #GET
     else:
-        params = {"UserID":request.user,}
-        return render(request, "myapp/home.html",context=params)
+        # ユーザーの過去の会話履歴を取得
+        message_count = Message.objects.filter(user=request.user).count()
+        chat_histories = Message.objects.filter(user=request.user).order_by('timestamp')[max(0, message_count-10):message_count]
+        
+        params = {
+            "UserID": request.user,
+            "chat_histories": chat_histories,
+        }
+        return render(request, "myapp/home.html", context=params)
 
 
 #新規登録

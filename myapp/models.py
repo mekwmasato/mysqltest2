@@ -23,6 +23,8 @@ class ChatSession(models.Model):
         return f"{self.user_account.user.username}"
 
 class Message(models.Model):
+    # このメッセージが関連するチャット履歴への外部キー
+    chat_history = models.ForeignKey('ChatSession', on_delete=models.CASCADE, related_name='messages')
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     ROLE_CHOICES = [
         ('system', 'system'),
@@ -32,8 +34,17 @@ class Message(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     content = models.TextField()
 
+    # メッセージの日時
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+class Summary(models.Model):
     # このメッセージが関連するチャット履歴への外部キー
-    chat_history = models.ForeignKey('ChatSession', on_delete=models.CASCADE, related_name='messages')
+    chat_history = models.ForeignKey('ChatSession', on_delete=models.CASCADE, related_name='summary')
+    ROLE_CHOICES = [
+        ('system', 'system'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    content = models.TextField()
 
     # メッセージの日時
     timestamp = models.DateTimeField(auto_now_add=True)

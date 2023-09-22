@@ -74,7 +74,7 @@ def home(request):
             'input_text': input_text,
             'response': response,
         }
-        print(f"context:{context}")
+        #print(f"context:{context}")
         # ユーザーの過去の会話履歴を取得
         message_count = Message.objects.filter(user=request.user).count()
         chat_histories = Message.objects.filter(user=request.user).order_by('timestamp')[max(0, message_count-10):message_count]

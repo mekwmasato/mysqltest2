@@ -16,11 +16,13 @@ class Account(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class ChatSession(models.Model):
     user_account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user_account.user.username}"
+
 
 class Message(models.Model):
     # このメッセージが関連するチャット履歴への外部キー
@@ -33,9 +35,11 @@ class Message(models.Model):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     content = models.TextField()
+    is_summarized = models.BooleanField(default=False)  #要約に使用されたか判別する
 
     # メッセージの日時
     timestamp = models.DateTimeField(auto_now_add=True)
+
 
 class Summary(models.Model):
     # このメッセージが関連するチャット履歴への外部キー
@@ -43,7 +47,7 @@ class Summary(models.Model):
     ROLE_CHOICES = [
         ('system', 'system'),
     ]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,default="system")
     content = models.TextField()
 
     # メッセージの日時

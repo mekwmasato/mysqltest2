@@ -9,4 +9,5 @@ urlpatterns = [
     path("home",views.home,name="home"),
     path('docsbot',views.docs,name="docs"),
     path("delete_session",views.delete_session,name="delete_session"),
+    path('chat_api/', views.chat_api, name='chat_api'),
 ]

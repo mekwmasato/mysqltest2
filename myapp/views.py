@@ -7,7 +7,7 @@ from .utils import chat_with_gpt
 
 # ログイン・ログアウト処理に利用
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
@@ -67,7 +67,7 @@ def home(request):
         input_text = request.POST['input_text']
         
         # Chat-GPTへのリクエスト
-        response, chat_session = chat_with_gpt(input_text, request.user)  # 修正
+        response, chat_session = chat_with_gpt(input_text, request.user)  #chatgptにレスポンスをもらう関数
 
         context = {
             'UserID': request.user,
@@ -82,7 +82,7 @@ def home(request):
         context['chat_histories'] = chat_histories
 
         return render(request, 'myapp/home.html', context)
-        
+
     #GET
     else:
         # ユーザーの過去の会話履歴を取得
@@ -163,3 +163,15 @@ class  AccountRegistration(TemplateView):
 
 def docs(request):
     return render(request, 'myapp/docsbot.html')
+
+
+def chat_api(request):
+    if request.method == 'POST':
+        input_text = request.POST['input_text']
+        
+        # Chat-GPTへのリクエスト
+        response, chat_session = chat_with_gpt(input_text, request.user)
+
+        return JsonResponse({
+            'response': response,
+        })

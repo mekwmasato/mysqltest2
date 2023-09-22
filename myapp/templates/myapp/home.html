@@ -24,7 +24,7 @@
     </div>
 
     <div class="card mt-3 p-4 col-md-8 mx-auto">
-        <form method="post" action="{% url 'myapp:home' %}" class="d-flex">
+        <form method="post" class="d-flex" id="message_form"> <!-- IDを追加 -->
             {% csrf_token %}
             <div class="flex-grow-1">
                 <input type="text" name="input_text" id="input_text" class="form-control">
@@ -34,6 +34,7 @@
             </div>
         </form>
     </div>
+    
     <div class="container">
         <form method="post" action="{% url 'myapp:delete_session' %}" class="d-flex justify-content-center align-items-center">
             {% csrf_token %}
@@ -43,4 +44,39 @@
     
     <p class="mt-4">ログアウトは<a href="{% url 'myapp:Logout' %}" class="text-primary">こちら</a></p>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#message_form").submit(function(event) {
+            event.preventDefault();
+
+            const inputText = $("#input_text").val();
+            const chatArea = $("#chatArea");
+
+            // 送信直後にユーザーのメッセージを追加
+            chatArea.append('<div class="d-flex mb-3 justify-content-end"><div class="bg-primary text-white rounded py-2 px-2 ml-5">' + inputText + '</div></div>');
+
+            // テキストボックスの内容をクリア
+            $("#input_text").val('');
+            // ここでスクロール
+            chatArea.scrollTop(chatArea.prop("scrollHeight"));
+
+            $.post("{% url 'myapp:chat_api' %}", {
+                input_text: inputText,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            }, function(data) {
+                console.log(data);
+
+                // ChatGPTのレスポンスを追加
+                chatArea.append('<div class="d-flex mb-3"><div class="bg-secondary text-white rounded py-2 px-2 mr-5">' + data.response + '</div></div>');
+
+                // ここでスクロール
+                chatArea.scrollTop(chatArea.prop("scrollHeight"));
+            });
+        });
+    });
+
+
+</script>
 {% endblock %}

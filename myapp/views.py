@@ -16,6 +16,8 @@ from .models import Message, Account, ChatSession
 from django.shortcuts import redirect
 from django.contrib import messages
 
+import requests
+
 
 #ログイン
 def Login(request):
@@ -165,7 +167,7 @@ def docs(request):
     return render(request, 'myapp/docsbot.html')
 
 
-def chat_api(request):
+def chat_api(request):#javascriptでリアルタイム描画するために別で作成
     if request.method == 'POST':
         input_text = request.POST['input_text']
         
@@ -175,3 +177,25 @@ def chat_api(request):
         return JsonResponse({
             'response': response,
         })
+    
+def voice_output(request):
+    text_response = request.POST.get('text_response')
+
+    # VOICEVOXを使用して音声合成
+    query_response = requests.post(
+        f'http://127.0.0.1:50021/audio_query?speaker=1&text="{text_response}"'
+    )
+    if query_response.status_code != 200:
+        return JsonResponse({"error": "VOICEVOX API error: " + query_response.text}, status=500)
+
+    query_data = query_response.json()
+    synthesis_response = requests.post(
+        f'http://127.0.0.1:50021/synthesis?speaker=1',
+        json=query_data
+    )
+    audio_data = synthesis_response.content
+
+    # 音声データをBase64エンコードしてJSONとして返却
+    import base64
+    audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+    return JsonResponse({"audio": audio_base64})

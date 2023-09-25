@@ -1,8 +1,29 @@
 {% extends "myapp/base.html" %}
+{% load static %}
 {% block title %}ホーム{% endblock %}
 {% block navbar-title %}Home{% endblock %}
 
 {% block content %}
+<div class="modal fade" id="audioPermissionModal" tabindex="-1" role="dialog" aria-labelledby="audioPermissionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="audioPermissionModalLabel">音声出力の許可</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        このアプリケーションは音声出力機能を使用します。許可してください。
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-primary" id="allowAudio">許可する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="container mt-5">
     <div class="card mt-4 col-8 mx-auto" id="chatArea" style="height: 400px; overflow-y: auto;">
 
@@ -48,6 +69,22 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        // ページ読み込み時にモーダルを表示
+        $("#audioPermissionModal").modal('show');
+
+        $("#allowAudio").on("click", function() {
+            let dummyAudio = new Audio("{% static 'audio/dummy_audio_file.mp3' %}");
+            dummyAudio.load();  // ここで音声ファイルをロード
+            dummyAudio.onerror = function(e) {
+                console.error("Audio error:", e);
+            };
+            dummyAudio.play().then(() => {
+                $('#audioPermissionModal').modal('hide');
+            }).catch(error => {
+                console.error("Error in dummy audio playback:", error);
+            });
+        });
+
         $("#message_form").submit(function(event) {
             event.preventDefault();
 
@@ -73,10 +110,22 @@
 
                 // ここでスクロール
                 chatArea.scrollTop(chatArea.prop("scrollHeight"));
+
+                // 音声出力のためのリクエスト
+                $.post("{% url 'myapp:voice_output' %}", {
+                    text_response: data.response,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                }, function(voiceData) {
+                    // 音声データを再生
+                    let audio = new Audio("data:audio/wav;base64," + voiceData.audio);
+                    audio.play().then(() => {
+                        console.log("Audio playback started successfully.");
+                    }).catch(error => {
+                        console.error("Error in audio playback:", error);
+                    });
+                });
             });
         });
     });
-
-
 </script>
 {% endblock %}

@@ -10,4 +10,5 @@ urlpatterns = [
     path('docsbot',views.docs,name="docs"),
     path("delete_session",views.delete_session,name="delete_session"),
     path('chat_api/', views.chat_api, name='chat_api'),
+    path('voice_output/', views.voice_output, name='voice_output'),
 ]

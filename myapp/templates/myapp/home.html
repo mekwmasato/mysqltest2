@@ -25,36 +25,48 @@
 </div>
 
 <div class="container mt-5">
-    <div class="card mt-4 col-8 mx-auto" id="chatArea" style="height: 400px; overflow-y: auto;">
+    <div class="row">
+        <!-- 画像を表示する部分 -->
+        <div class="col-md-4">
+            <img src="{% static 'images/3058740338388075842.png.webp' %}" alt="Description" class="img-fluid">
+        </div>
 
-        {% for chat in chat_histories %}
-            {% if chat.role == 'user' %}<!-- ユーザーが送信した内容 -->
-            <div class="d-flex mb-3 justify-content-end">
-                <div class="bg-primary text-white rounded py-2 px-2 ml-5">
-                    {{ chat.content }}
-                </div>
+        <!-- チャットエリア -->
+        <div class="col-md-8">
+            <div class="card mt-4 col-8 mx-auto" id="chatArea" style="height: 400px; overflow-y: auto;">
+                {% for chat in chat_histories %}
+                    {% if chat.role == 'user' %}<!-- ユーザーが送信した内容 -->
+                    <div class="d-flex mb-3 justify-content-end">
+                        <div class="bg-primary text-white rounded py-2 px-2 ml-5">
+                            {{ chat.content }}
+                        </div>
+                    </div>
+                    {% else %}<!-- ChatGPTの返信 -->
+                    <div class="d-flex mb-3">
+                        <div class="bg-secondary text-white rounded py-2 px-2 mr-5">
+                            {{ chat.content }}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
-            {% else %}<!-- ChatGPTの返信 -->
-            <div class="d-flex mb-3">
-                <div class="bg-secondary text-white rounded py-2 px-2 mr-5">
-                    {{ chat.content }}
-                </div>
+            <div class="card mt-3 p-4 mx-auto">
+                <form method="post" class="d-flex" id="message_form"> <!-- IDを追加 -->
+                    {% csrf_token %}
+                    <div class="flex-grow-1">
+                        <input type="text" name="input_text" id="input_text" class="form-control">
+                    </div>
+                    <div class="ms-3">
+                        <button type="submit" class="btn btn-primary">送信する</button>
+                    </div>
+                </form>
             </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+        </div>
+        
 
-    <div class="card mt-3 p-4 col-md-8 mx-auto">
-        <form method="post" class="d-flex" id="message_form"> <!-- IDを追加 -->
-            {% csrf_token %}
-            <div class="flex-grow-1">
-                <input type="text" name="input_text" id="input_text" class="form-control">
-            </div>
-            <div class="ms-3">
-                <button type="submit" class="btn btn-primary">送信する</button>
-            </div>
-        </form>
+        
     </div>
+    
     
     <div class="container">
         <form method="post" action="{% url 'myapp:delete_session' %}" class="d-flex justify-content-center align-items-center">

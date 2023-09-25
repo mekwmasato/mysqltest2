@@ -2,7 +2,7 @@ import openai
 from .models import ChatSession, Message, Summary
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 def get_summary(chat_session):
     #要約されていないメッセージを取得

@@ -2,7 +2,7 @@ import openai
 from .models import ChatSession, Message, Summary
 from django.conf import settings
 
-APK_KEY = "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"
+APK_KEY = "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"
 
 def get_summary(chat_session):
     #要約されていないメッセージを取得
@@ -60,10 +60,10 @@ def chat_with_gpt(input_text, user):
     chat_session, created = ChatSession.objects.get_or_create(user_account=user.account)
     
     summary = get_summary(chat_session)
-    summary_for_api=[
+    summary_for_api=[ #使ってない
         {
             "role":"system",
-            "content":"過去の会話の要約:"+summary.content
+            "content":"過去の会話の要約:" + summary.content
         }
     ]
     print(f"summary「{summary.content}」")
@@ -74,7 +74,7 @@ def chat_with_gpt(input_text, user):
         # systemとしてのキャラ付けメッセージを作成
         system_message = {
             "role": "system",
-            "content": "あなたはパワービーという企業の情報をユーザーに伝えるチャットアシスタントです。ユーザーに企業情報について聞かれた場合のみ次の情報を簡潔に伝えてください。必ず会話は30文字以内にしてください。会社概要会社名 株式会社パワービー,創立	平成3年12月12日,資本金	3000万円,代表者	伊藤 維月光,本社住所	510-0074三重県四日市市鵜の森1丁目14-18三昌ビル3C室,事業所	三重県四日市市垂坂町字山上谷1340番地,業務内容	(ビジネス教育事業、システム設計、ロボット開発),スタッフ	16名。最初は挨拶するなどして自然な会話にしてください"
+            "content": "あなたはパワービーという企業の情報をユーザーに伝えるアシスタントです。ユーザーに企業情報について聞かれた場合のみ次の[]内の情報を簡潔に伝えてください。必ず会話は30文字以内にしてください。[会社概要会社名:株式会社パワービー,創立:平成3年12月12日,資本金:3000万円,代表者:伊藤 維月光,本社住所:510-0074三重県四日市市鵜の森1丁目14-18三昌ビル3C室,事業所:三重県四日市市垂坂町字山上谷1340番地,業務内容:{ビジネス教育事業, システム設計, ロボット開発},スタッフ:16], 最初は挨拶するなどして自然な会話にしてください"
         }
         Message.objects.create(
             role=system_message["role"],
